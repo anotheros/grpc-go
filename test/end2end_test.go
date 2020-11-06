@@ -26,7 +26,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
-	"crypto/tls"
+	"github.com/anotheros/cryptogm/tls"
 	"errors"
 	"flag"
 	"fmt"

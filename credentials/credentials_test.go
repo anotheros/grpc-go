@@ -20,7 +20,7 @@ package credentials
 
 import (
 	"context"
-	"crypto/tls"
+	"github.com/anotheros/cryptogm/tls"
 	"net"
 	"reflect"
 	"strings"

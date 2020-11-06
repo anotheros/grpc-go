@@ -20,8 +20,8 @@ package advancedtls
 
 import (
 	"context"
-	"crypto/tls"
-	"crypto/x509"
+	"github.com/anotheros/cryptogm/tls"
+	"github.com/anotheros/cryptogm/x509"
 	"fmt"
 	"net"
 	"sync"

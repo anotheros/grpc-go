@@ -20,7 +20,7 @@ package test
 
 import (
 	"context"
-	"crypto/tls"
+	"github.com/anotheros/cryptogm/tls"
 	"fmt"
 	"net"
 	"reflect"
