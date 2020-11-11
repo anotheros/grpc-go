@@ -20,9 +20,9 @@ package credentials
 
 import (
 	"context"
+	"fmt"
 	"github.com/anotheros/cryptogm/tls"
 	"github.com/anotheros/cryptogm/x509"
-	"fmt"
 	"io/ioutil"
 	"net"
 
