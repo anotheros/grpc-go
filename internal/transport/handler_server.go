@@ -28,6 +28,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"google.golang.org/grpc/credentials"
 	"io"
 	"net"
 	"net/http"
@@ -367,6 +368,9 @@ func (ht *serverHandlerTransport) HandleStreams(startStream func(*Stream), trace
 //	if req.TLS != nil {
 //		pr.AuthInfo = credentials.TLSInfo{State: *req.TLS, CommonAuthInfo: credentials.CommonAuthInfo{SecurityLevel: credentials.PrivacyAndIntegrity}}
 //	}
+	if req.TLS != nil {
+		pr.AuthInfo = credentials.TLSInfo{State: *cloneConnectionState(req.TLS), CommonAuthInfo: credentials.CommonAuthInfo{SecurityLevel: credentials.PrivacyAndIntegrity}}
+	}
 	ctx = metadata.NewIncomingContext(ctx, ht.headerMD)
 	s.ctx = peer.NewContext(ctx, pr)
 	if ht.stats != nil {
