@@ -133,6 +133,19 @@ func appendH2ToNextProtos(ps []string) []string {
 func NewTLS(c *tls.Config) TransportCredentials {
 	tc := &tlsCreds{cloneTLSConfig(c)}
 	tc.config.NextProtos = appendH2ToNextProtos(tc.config.NextProtos)
+	if len(c.Certificates) > 0 {
+		_, ok := c.Certificates[0].PrivateKey.(*sm2.PrivateKey)
+		if ok {
+			tc.config.GMSupport = &tls.GMSupport{}
+		}
+	} else {
+		certs := c.RootCAs.GetCerts()
+		if len(certs) > 0 {
+			if _, ok := certs[0].PublicKey.(*sm2.PublicKey); ok {
+				tc.config.GMSupport = &tls.GMSupport{}
+			}
+		}
+	}
 	return tc
 }
 
@@ -189,7 +202,12 @@ func NewServerTLSFromFile(certFile, keyFile string) (TransportCredentials, error
 	if err != nil {
 		return nil, err
 	}
-	return NewTLS(&tls.Config{Certificates: []tls.Certificate{cert}}), nil
+	_, ok := cert.PrivateKey.(*sm2.PrivateKey)
+	if ok {
+		return NewTLS(&tls.Config{Certificates: []tls.Certificate{cert}, GMSupport: &tls.GMSupport{}}), nil
+	} else {
+		return NewTLS(&tls.Config{Certificates: []tls.Certificate{cert}}), nil
+	}
 }
 
 // TLSChannelzSecurityValue defines the struct that TLS protocol should return
