@@ -21,6 +21,7 @@ package credentials
 import (
 	"context"
 	"fmt"
+	"github.com/anotheros/cryptogm/sm2"
 	"github.com/anotheros/cryptogm/tls"
 	"github.com/anotheros/cryptogm/x509"
 	"io/ioutil"
@@ -160,11 +161,20 @@ func NewClientTLSFromFile(certFile, serverNameOverride string) (TransportCredent
 	if err != nil {
 		return nil, err
 	}
+	cert, err := x509.Pem2Cert(b)
+	if err != nil {
+		return nil, err
+	}
 	cp := x509.NewCertPool()
 	if !cp.AppendCertsFromPEM(b) {
 		return nil, fmt.Errorf("credentials: failed to append certificates")
 	}
-	return NewTLS(&tls.Config{ServerName: serverNameOverride, RootCAs: cp}), nil
+	_, ok := cert.PublicKey.(*sm2.PublicKey)
+	if ok {
+		return NewTLS(&tls.Config{ServerName: serverNameOverride, RootCAs: cp, GMSupport: &tls.GMSupport{}}), nil
+	} else {
+		return NewTLS(&tls.Config{ServerName: serverNameOverride, RootCAs: cp}), nil
+	}
 }
 
 // NewServerTLSFromCert constructs TLS credentials from the input certificate for server.
